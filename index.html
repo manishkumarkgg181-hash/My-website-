@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#003399">
+    <link rel="manifest" href="manifest.json">
+    <title>Apna Technical Services (ATS) - Complete App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: #e9eff6; padding-bottom: 90px; color: #0f172a; line-height: 1.45; }
+
+        /* Header */
+        .header { background: linear-gradient(135deg, #002266 0%, #003399 100%); color: #FFD700; padding: 15px 14px; text-align: center; border-bottom: 4px solid #FFD700; box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+        .header h1 { font-size: 20px; font-weight: 800; letter-spacing: 0.3px; }
+        .header p { color: #f8fafc; font-size: 12px; margin-top: 4px; }
+        .sync-pill { display: inline-block; margin-top: 7px; padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #00184d; color: #FFD700; border: 1px solid #FFD700; }
+
+        /* Customer Session Strip */
+        .auth-strip { background: #ffffff; border-bottom: 1px solid #cbd5e1; padding: 8px 14px; font-size: 12px; }
+        .auth-strip-inner { max-width: 620px; margin: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .auth-user { font-weight: 700; color: #003399; }
+
+        /* Navigation Tabs */
+        .nav-tabs { display: flex; background: #001d59; border-bottom: 2px solid #FFD700; position: sticky; top: 0; z-index: 20; overflow-x: auto; scrollbar-width: none; }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .nav-btn { flex: 1; min-width: 66px; padding: 11px 6px; background: none; border: none; color: #e2e8f0; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.15s; }
+        .nav-btn.active { background: #FFD700; color: #001d59; }
+
+        /* Container */
+        .container { padding: 14px; max-width: 620px; margin: auto; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0.6; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { color: #003399; font-size: 15.5px; font-weight: 800; margin: 14px 0 9px; border-left: 4px solid #FFD700; padding-left: 9px; }
+
+        /* Clickable Poster Banner */
+        .poster-box { position: relative; border-radius: 12px; overflow: hidden; border: 2px solid #003399; margin-bottom: 14px; cursor: pointer; background: #003399; box-shadow: 0 3px 8px rgba(0,34,102,0.14); }
+        .poster-box img { width: 100%; display: block; max-height: 220px; object-fit: cover; }
+        .poster-overlay { background: rgba(0, 29, 89, 0.95); color: #FFD700; padding: 11px 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .poster-overlay span { font-size: 12.5px; font-weight: 700; }
+        .poster-badge { background: #25D366; color: #fff; padding: 6px 11px; border-radius: 7px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+        /* All Services Grid with Photos */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 14px; }
+        .card { background: #ffffff; color: #0f172a; padding: 8px; border-radius: 10px; text-align: center; border: 2px solid #cbd5e1; cursor: pointer; transition: 0.15s; box-shadow: 0 2px 5px rgba(15,23,42,0.06); }
+        .card:hover { border-color: #003399; transform: translateY(-2px); }
+        .card:active { transform: scale(0.97); }
+        .card.selected { border-color: #003399; background: #eff6ff; box-shadow: 0 0 0 2px #FFD700; }
+        .card img.service-photo { width: 100%; height: 68px; object-fit: cover; border-radius: 7px; display: block; margin-bottom: 6px; background: #dbeafe; }
+        .card h3 { font-size: 11.5px; font-weight: 700; color: #002266; line-height: 1.25; }
+
+        /* Selected Service Preview Bar */
+        .selected-service-bar { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; margin-top: 6px; }
+        .selected-service-bar img { width: 64px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; background: #dbeafe; flex-shrink: 0; }
+        .selected-service-bar .meta { font-size: 12px; color: #334155; }
+        .selected-service-bar .meta strong { color: #003399; display: block; font-size: 13px; }
+
+        /* Boxes & Forms */
+        .box { background: #ffffff; padding: 14px; border-radius: 12px; box-shadow: 0 2px 8px rgba(15,23,42,0.07); margin-bottom: 14px; border: 1px solid #e2e8f0; }
+        label { display: block; font-size: 12px; font-weight: 700; color: #1e293b; margin: 10px 0 4px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #ffffff; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #003399; box-shadow: 0 0 0 2px rgba(0,51,153,0.12); }
+
+        .row-flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .btn { width: 100%; padding: 11px 14px; font-size: 13.5px; font-weight: 700; border: none; border-radius: 8px; margin-top: 10px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; transition: 0.15s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-loc { background: #0284c7; color: #fff; padding: 9px 11px; font-size: 12px; margin-top: 0; width: auto; white-space: nowrap; }
+        .btn-whatsapp { background: #16a34a; color: #ffffff; }
+        .btn-pay { background: #f59e0b; color: #001d59; }
+        .btn-primary { background: #003399; color: #FFD700; }
+        .btn-done { background: #15803d; color: #ffffff; padding: 9px 12px; font-size: 12.5px; margin-top: 0; }
+        .btn-warn { background: #ea580c; color: #ffffff; }
+        .btn-danger { background: #dc2626; color: #ffffff; }
+        .btn-secondary { background: #e2e8f0; color: #0f172a; }
+        .btn-sm { width: auto; padding: 7px 11px; font-size: 12px; margin-top: 0; }
+
+        .loc-status { font-size: 12px; color: #0f172a; background: #f1f5f9; padding: 8px 10px; border-radius: 8px; margin-top: 6px; word-break: break-word; }
+        .range-note { font-size: 11.5px; color: #0369a1; background: #f0f9ff; border: 1px solid #bae6fd; padding: 8px 10px; border-radius: 8px; margin-top: 6px; }
+        .fee-banner { background: #fef9c3; border: 1px solid #facc15; color: #854d0e; padding: 9px 10px; border-radius: 8px; margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+        .labour-box { background: #eff6ff; border: 1px solid #93c5fd; padding: 10px 12px; border-radius: 8px; margin-top: 8px; }
+        .otp-box { background: #f0fdf4; border: 1px solid #86efac; padding: 10px 12px; border-radius: 8px; margin-top: 10px; }
+        .pin-hint { font-size: 11.5px; color: #475569; margin-top: 6px; }
+
+        /* QR Box */
+        .qr-box { background: #0f172a; border: 2px solid #003399; border-radius: 12px; padding: 12px; margin-top: 12px; text-align: center; color: #f8fafc; }
+        .qr-box img { width: 210px; max-width: 100%; height: auto; border-radius: 10px; border: 2px solid #FFD700; display: inline-block; background: #000000; }
+        .qr-caption { font-size: 12px; color: #fde047; margin-top: 8px; font-weight: 700; }
+
+        /* Summary Strip & Technician Work Table */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .stat-box { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 8px; text-align: center; }
+        .stat-box strong { display: block; font-size: 16px; color: #003399; }
+        .stat-box span { font-size: 11px; color: #475569; }
+
+        .tech-report-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+        .tech-report-table th, .tech-report-table td { border: 1px solid #cbd5e1; padding: 7px 6px; text-align: left; }
+        .tech-report-table th { background: #002266; color: #FFD700; font-weight: 700; }
+        .tech-report-table tr:nth-child(even) { background: #f8fafc; }
+        .table-wrap { overflow-x: auto; }
+
+        /* Cards & Lists */
+        .order-card { background: #f8fafc; border: 1px solid #cbd5e1; border-left: 5px solid #003399; padding: 12px; border-radius: 10px; margin-bottom: 10px; }
+        .order-card h4 { color: #003399; font-size: 14px; margin-bottom: 4px; }
+        .order-card p { font-size: 12.5px; color: #334155; margin: 3px 0; }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-top: 5px; margin-right: 4px; }
+        .pending { background: #fef08a; color: #854d0e; }
+        .confirmed { background: #e0e7ff; color: #3730a3; }
+        .ontheway { background: #e0f2fe; color: #0369a1; }
+        .completed { background: #dcfce7; color: #166534; }
+        .cancelled { background: #fee2e2; color: #991b1b; }
+        .paid-badge { background: #dbeafe; color: #1e40af; }
+        .unpaid-badge { background: #fee2e2; color: #991b1b; }
+
+        .assign-box { background: #eef2ff; border: 1px solid #c7d2fe; padding: 10px; border-radius: 8px; margin-top: 8px; }
+        .track-live-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 9px 10px; border-radius: 8px; margin-top: 7px; font-size: 12px; color: #14532d; }
+
+        .fb-item { border-bottom: 1px solid #e2e8f0; padding: 8px 0; font-size: 13px; }
+        .fb-item:last-child { border-bottom: none; }
+
+        .bill-box { background: #fffbeb; border: 1px dashed #d97706; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 12.5px; }
+
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        .photo-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px; text-align: center; }
+        .photo-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 6px; background: #f1f5f9; }
+        .photo-card span { display: block; font-size: 10.5px; font-weight: 700; color: #334155; margin-top: 4px; }
+
+        /* Bottom Call Bar */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #001d59; display: flex; justify-content: space-around; padding: 10px; border-top: 2px solid #FFD700; z-index: 20; }
+        .call-btn { background: #FFD700; color: #001d59; text-decoration: none; padding: 7px 15px; border-radius: 999px; font-weight: 800; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🛠️ Apna Technical Services (ATS)</h1>
+        <p>Khagaria (₹300) • Maheskut (₹400) • Beldour (₹400) • Alamnagar Khuran (₹400)</p>
+        <div id="syncStatus" class="sync-pill">Mode: Local + Cloud Ready</div>
+    </div>
+
+    <!-- Customer Login Status Bar -->
+    <div class="auth-strip">
+        <div class="auth-strip-inner">
+            <span id="customerAuthStatus" class="auth-user">Guest User (Login nahi kiya)</span>
+            <div class="row-flex">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openAccountTab()">🔐 Customer Login</button>
+                <button type="button" id="logoutCustBtn" class="btn btn-secondary btn-sm" style="display:none;" onclick="logoutCustomer()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('customer', this)">🏠 Book</button>
+        <button class="nav-btn" onclick="switchTab('account', this)">👤 Login</button>
+        <button class="nav-btn" onclick="switchTab('track', this)">🔎 Track</button>
+        <button class="nav-btn" onclick="switchTab('payment', this)">💳 Pay</button>
+        <button class="nav-btn" onclick="switchTab('feedback', this)">⭐ Feedback</button>
+        <button class="nav-btn" onclick="switchTab('tech', this)">🔧 Tech</button>
+        <button class="nav-btn" onclick="switchTab('owner', this)">👑 Owner</button>
+    </div>
+
+    <div class="container">
+
+        <!-- 1. CUSTOMER BOOKING SECTION -->
+        <div id="customer" class="section active">
+            <div class="poster-box" onclick="quickPosterBook()">
+                <img id="posterImg" src="poster.jpg" alt="ATS LED TV Repair Poster">
+                <div class="poster-overlay">
+                    <span>📸 Poster Par Click Karein — Instant TV Repair Order</span>
+                    <div class="poster-badge">Order Now</div>
+                </div>
+            </div>
+
+            <div class="section-title">All Services (Har Service Ki Sahi Photo & Ek Click Booking)</div>
+            <div id="servicesGrid" class="grid"></div>
+
+            <div class="box" id="bookingFormBox">
+                <div class="section-title" style="margin-top:0;">Service Booking Form</div>
+
+                <label>Aapka Naam</label>
+                <input type="text" id="custName" placeholder="Apna naam likhein">
+
+                <label>Mobile Number</label>
+                <input type="tel" id="custPhone" placeholder="10 digit mobile number" maxlength="15">
+
+                <label>Gmail / Email (Optional)</label>
+                <input type="email" id="custEmail" placeholder="example@gmail.com">
+
+                <label>Nazdeeki Branch (Max 25 km Radius)</label>
+                <select id="branch" onchange="onBranchChange()">
+                    <option value="Khagaria">Khagaria (Main Branch — ₹300)</option>
+                    <option value="Maheskut">Maheskut / Maheshkhunt (₹400)</option>
+                    <option value="Beldour">Beldour (₹400)</option>
+                    <option value="Alamnagar Khuran">Alamnagar Khuran (₹400)</option>
+                </select>
+                <div id="branchFeeDisplay" class="fee-banner">💰 Branch Service Charge: ₹300 (Khagaria)</div>
+                <div class="range-note">
+                    📍 <b>Service Range Rule:</b> Sabhi branches mein <b>20–25 km</b> ke andar hi booking confirm hoti hai (25 km se door location par booking block hogi).
+                </div>
+
+                <label>Service / Problem Chunein</label>
+                <select id="problem" onchange="onServiceChange()"></select>
+                <div id="selectedServicePreview" class="selected-service-bar"></div>
+
+                <!-- Labour Count & Per-Day Rate Box -->
+                <div id="labourOptionsBox" class="labour-box" style="display:none;">
+                    <div style="font-size:13px; font-weight:700; color:#1e3a8a; margin-bottom:4px;">👷 Labour Booking Details</div>
+                    <div class="row-flex">
+                        <div style="flex:1; min-width:130px;">
+                            <label style="margin-top:4px;">Kitne Labour Chahiye?</label>
+                            <input type="number" id="labourCount" value="1" min="1" max="50" oninput="updateLabourEstimate()">
+                        </div>
+                        <div style="flex:1; min-width:130px;">
+                            <label style="margin-top:4px;">Per-Day Rate (₹ / Labour)</label>
+                            <input type="number" id="labourRate" value="500" min="50" step="10" oninput="updateLabourEstimate()">
+                        </div>
+                    </div>
+                    <div id="labourEstimateText" style="margin-top:8px; font-size:12.5px; font-weight:700; color:#0f172a;">
+                        Estimated Total: ₹800 (Branch ₹300 + 1 Labour × ₹500/day)
+                    </div>
+                </div>
+
+                <label>Live Location</label>
+                <div class="row-flex">
+                    <button type="button" class="btn btn-loc" onclick="getLiveLocation()">📍 Live Location Le</button>
+                    <span id="locBadge" style="font-size:12px; color:#0284c7; font-weight:600;">Location pending</span>
+                </div>
+                <div id="locDetails" class="loc-status">Abhi live location add nahi hui hai.</div>
+                <input type="hidden" id="liveLocLink" value="">
+                <input type="hidden" id="distanceKm" value="">
+                <input type="hidden" id="withinRange" value="unknown">
+
+                <label>Pura Address & Kaam Ka Vivaran (Gaon / Mohalla / Landmark)</label>
+                <textarea id="address" rows="2" placeholder="Apna pura pata aur kaam ki jankari (jaise kaam ka prakar ya motor/pipe problem) likhein..."></textarea>
+
+                <button type="button" class="btn btn-whatsapp" onclick="bookService()">📲 Book Order & Send WhatsApp</button>
+            </div>
+        </div>
+
+        <!-- 2. CUSTOMER LOGIN & MY ORDERS SECTION -->
+        <div id="account" class="section">
+            <div class="box">
+                <div class="section-title" style="margin-top:0;">Customer Login (Phone OTP ya Gmail)</div>
+                <p style="font-size:12.5px; color:#475569; margin-bottom:8px;">
+                    Apne Phone Number (OTP) ya Gmail se login karein aur apne bookings dekhein.
+                </p>
+
+                <label>Aapka Naam</label>
+                <input type="text" id="loginCustName" placeholder="Apna naam likhein">
+
+                <label>Mobile Number (10 digit, jaise +919876543210)</label>
+                <div class="row-flex">
+                    <input type="tel" id="loginCustPhone" placeholder="9876543210" maxlength="15" style="flex:1;">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="sendMobileOtp()">📲 OTP Bhejein</button>
+                </div>
+
+                <div id="otpVerifyBox" class="otp-box" style="display:none;">
+                    <label style="margin-top:0;">6-Digit OTP Daalein</label>
+                    <div class="row-flex">
+                        <input type="text" id="loginOtpCode" placeholder="6-digit OTP" maxlength="6" style="flex:1;">
+                        <button type="button" class="btn btn-done btn-sm" onclick="verifyMobileOtp()">✅ Verify OTP</button>
+                    </div>
+                    <small id="otpHintText" style="display:block; margin-top:6px; color:#166534;"></small>
+                </div>
+
+                <div id="recaptcha-container" style="margin-top:8px;"></div>
+
+                <label>Gmail / Email ID</label>
+                <input type="email" id="loginCustEmail" placeholder="Jaise: customer@gmail.com">
+                <button type="button" class="btn btn-primary" onclick="loginWithEmail()">✉️ Gmail Se Login Karein</button>
+            </div>
+
+            <div class="box">
+                <div class="section-title" style="margin-top:0;">Mere Bookings (Logged-in Account)</div>
+                <div id="myOrdersList">
+                    <p style="font-size:12.5px; color:#64748b;">Login karne ke baad aapke orders yahan dikhenge.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CUSTOMER ORDER TRACK & INVOICE SECTION -->
+        <div id="track" class="section">
+            <div class="box">
+                <div class="section-title" style="margin-top:0;">Order Status, Technician Location & Bill Track</div>
+                <p style="font-size:12.5px; color:#475569; margin-bottom:8px;">
+                    Apna Order ID (jaise <code>ATS-123456</code>), Mobile Number ya Gmail daal kar status, technician ki live location aur bill dekhein.
+                </p>
+                <div class="row-flex">
+                    <input type="text" id="trackQuery" placeholder="Order ID, Mobile ya Gmail likhein..." style="flex:1;" oninput="renderTrackedOrders()">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="renderTrackedOrders()">🔍 Search</button>
+                </div>
+            </div>
+            <div id="trackResults"></div>
+        </div>
+
+        <!-- 4. ONLINE PAYMENT SECTION -->
+        <div id="payment" class="section">
+            <div class="box">
+                <div class="section-title" style="margin-top:0;">Online UPI QR & Order Payment</div>
+                <p style="font-size:13px; color:#475569; margin-bottom:10px;">
+                    Neeche diye gaye PhonePe QR ko scan karein ya UPI app se pay karein, phir UTR/note daal kar payment record save karein.
+                </p>
+
+                <label>Booking Order Chunein (Optional)</label>
+                <select id="payOrderSelect" onchange="onPayOrderChange()">
+                    <option value="">-- General Payment (Order ID Nahi) --</option>
+                </select>
+
+                <label>Aapka Naam</label>
+                <input type="text" id="payName" placeholder="Customer ka naam">
+
+                <label>Amount (₹ INR)</label>
+                <input type="number" id="payAmount" placeholder="Jaise: 300 ya 400" min="1" oninput="updateQrMeta()">
+
+                <label>UPI ID</label>
+                <div class="row-flex">
+                    <input type="text" id="upiId" value="manishkumarkgg181@ybl" placeholder="manishkumarkgg181@ybl" style="flex:1;" oninput="updateQrMeta()">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="copyUpiId()">📋 Copy</button>
+                </div>
+
+                <div class="qr-box">
+                    <div style="font-size:13px; font-weight:800; color:#FFD700; margin-bottom:8px;">📷 PhonePe / UPI QR Code — Manish Kumar</div>
+                    <img id="upiQrImg" src="AccountQRCodeBank Of Baroda - 9789_DARK_THEME.png" alt="PhonePe QR Code - Manish Kumar">
+                    <div id="qrMetaText" class="qr-caption">UPI: manishkumarkgg181@ybl • Name: Manish Kumar</div>
+                </div>
+
+                <button type="button" class="btn btn-pay" onclick="openUpiPay()">💳 UPI App Se Pay Karein</button>
+
+                <label>Payment UTR / Transaction Note</label>
+                <input type="text" id="payRef" placeholder="UTR number ya Paid via UPI likhein">
+                <button type="button" class="btn btn-primary" onclick="recordPayment()">✅ Payment Save & Link Karein</button>
+                <div id="payHistory" style="margin-top:12px;"></div>
+            </div>
+        </div>
+
+        <!-- 5. FEEDBACK SECTION -->
+        <div id="feedback" class="section">
+            <div class="box">
+                <div class="section-title" style="margin-top:0;">Customer Feedback & Rating</div>
+
+                <label>Aapka Naam</label>
+                <input type="text" id="fbName" placeholder="Apna naam likhein">
+
+                <label>Rating Chunein</label>
+                <select id="fbRating">
+                    <option value="⭐⭐⭐⭐⭐ (5/5 - Bahut Accha)">⭐⭐⭐⭐⭐ (5/5 - Bahut Accha)</option>
+                    <option value="⭐⭐⭐⭐ (4/5 - Accha)">⭐⭐⭐⭐ (4/5 - Accha)</option>
+                    <option value="⭐⭐⭐ (3/5 - Theek Hai)">⭐⭐⭐ (3/5 - Theek Hai)</option>
+                    <option value="⭐⭐ (2/5 - Sudhar Ki Zaroorat)">⭐⭐ (2/5 - Sudhar Ki Zaroorat)</option>
+                    <option value="⭐ (1/5 - Kharab)">⭐ (1/5 - Kharab)</option>
+                </select>
+
+                <label>Aapka Anubhav / Sujhav</label>
+                <textarea id="fbMessage" rows="3" placeholder="Hamari service ke baare mein likhein..."></textarea>
+
+                <button type="button" class="btn btn-primary" onclick="submitFeedback()">⭐ Feedback Submit Karein</button>
+            </div>
+
+            <div class="box">
+                <div class="section-title" style="margin-top:0;">Recent Feedbacks</div>
+                <div id="feedbackList"></div>
+            </div>
+        </div>
+
+        <!-- 6. TECHNICIAN SECTION -->
+        <div id="tech" class="section">
+            <div id="techLoginBox" class="box">
+                <div class="section-title" style="margin-top:0;">Technician Login</div>
+                <label>Technician PIN Daalein</label>
+                <input type="password" id="techPin" placeholder="Technician PIN">
+                <button type="button" class="btn btn-primary" onclick="loginTech()">Login Karein</button>
+                <p class="pin-hint">Technician PIN: <b>ATS@7788</b></p>
+            </div>
+            <div id="techDashboard" style="display:none;">
+                <div class="section-title">Technician Work Summary (Kaun Kitna Kaam Kiya)</div>
+                <div id="techWorkSummaryBox" class="box"></div>
+
+                <div class="section-title">Assigned Kaam, Auto Live Location, Photos & Bill</div>
+                <div class="box" style="padding:10px;">
+                    <div class="row-flex">
+                        <input type="text" id="techSearch" placeholder="Order ID, Naam ya Branch search..." oninput="renderTechOrders()" style="flex:1; padding:8px; font-size:13px;">
+                        <select id="techFilter" onchange="renderTechOrders()" style="width:auto; padding:8px; font-size:13px;">
+                            <option value="ALL">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="On The Way">On The Way</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="techOrdersList"></div>
+            </div>
+        </div>
+
+        <!-- 7. OWNER SECTION -->
+        <div id="owner" class="section">
+            <div id="ownerLoginBox" class="box">
+                <div class="section-title" style="margin-top:0;">Owner Admin Login</div>
+                <label>Owner PIN Daalein</label>
+                <input type="password" id="ownerPin" placeholder="Owner PIN">
+                <button type="button" class="btn btn-primary" onclick="loginOwner()">Admin Dashboard Kholein</button>
+                <p class="pin-hint">Owner PIN: <b>ATS@3344</b></p>
+            </div>
+            <div id="ownerDashboard" style="display:none;">
+                <div class="section-title">Confirm Tech, Track Technician Location & Manage Orders</div>
+                <div id="ownerStats" class="stats-grid"></div>
+
+                <div class="section-title">Sabhi Technicians Ka Kaam Hisab (Complete Work Report)</div>
+                <div id="ownerTechReportBox" class="box"></div>
+
+                <div class="section-title">All Orders List</div>
+                <div class="box" style="padding:10px;">
+                    <div class="row-flex">
+                        <input type="text" id="ownerSearch" placeholder="Order ID, Naam, Phone ya Branch search..." oninput="renderOwnerOrders()" style="flex:1; padding:8px; font-size:13px;">
+                        <select id="ownerFilter" onchange="renderOwnerOrders()" style="width:auto; padding:8px; font-size:13px;">
+                            <option value="ALL">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="On The Way">On The Way</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="ownerOrdersList"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-bar">
+        <a href="tel:7488778228" class="call-btn">📞 7488778228</a>
+        <a href="tel:9693654168" class="call-btn">📞 9693654168</a>
+    </div>
+
+    <!-- Optional Firebase SDK (Compat) for Live Multi-Device Sync & Auth -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script>
+        const OWNER_PIN = 'ATS@3344';
+        const TECH_PIN = 'ATS@7788';
+        const DEFAULT_UPI_ID = 'manishkumarkgg181@ybl';
+        const WHATSAPP_NUMBER = '917488778228';
+        const LABOUR_SERVICE_VALUE = 'Labour / Mazdoor (Kisi Bhi Kaam Ke Liye)';
+        const CUSTOM_QR_FILE = 'AccountQRCodeBank Of Baroda - 9789_DARK_THEME.png';
+
+        const MAX_SERVICE_KM = 25;
+        const BRANCH_FEES = {
+            'Khagaria': 300,
+            'Maheskut': 400,
+            'Beldour': 400,
+            'Alamnagar Khuran': 400
+        };
+        const BRANCH_COORDS = {
+            'Khagaria': { lat: 25.5026, lng: 86.4730 },
+            'Maheskut': { lat: 25.4375, lng: 86.5260 },
+            'Beldour': { lat: 25.5169, lng: 86.8094 },
+            'Alamnagar Khuran': { lat: 25.5530, lng: 86.9560 }
+        };
+
+        function createServiceGraphic(title, badgeText, c1, c2, artSvg) {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="160" viewBox="0 0 260 160">
+                <defs>
+                    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="${c1}"/>
+                        <stop offset="100%" stop-color="${c2}"/>
+                    </linearGradient>
+                </defs>
+                <rect width="260" height="160" rx="14" fill="url(#bg)"/>
+                <circle cx="225" cy="28" r="42" fill="#ffffff" fill-opacity="0.10"/>
+                <circle cx="32" cy="130" r="36" fill="#FFD700" fill-opacity="0.10"/>
+                <g transform="translate(130, 62)">${artSvg}</g>
+                <rect x="12" y="114" width="236" height="34" rx="8" fill="#001640" fill-opacity="0.72"/>
+                <text x="130" y="130" font-size="12.5" font-family="Segoe UI, sans-serif" font-weight="800" fill="#FFD700" text-anchor="middle">${title}</text>
+                <text x="130" y="143" font-size="9.5" font-family="Segoe UI, sans-serif" font-weight="600" fill="#e2e8f0" text-anchor="middle">${badgeText}</text>
+            </svg>`;
+            return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+        }
+
+        const FALLBACK_POSTER_SVG = createServiceGraphic(
+            'LED / SMART TV & HOME APPLIANCE REPAIR',
+            'Khagaria • Maheskut • Beldour • Alamnagar Khuran',
+            '#002266',
+            '#0284c7',
+            '<rect x="-46" y="-34" width="92" height="58" rx="6" fill="#0f172a" stroke="#FFD700" stroke-width="3"/><rect x="-40" y="-28" width="80" height="44" rx="3" fill="#38bdf8" fill-opacity="0.35"/><path d="M-12 24 L12 24 M0 24 L0 32 M-18 32 L18 32" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>'
+        );
+
+        const SERVICES_DATA = [
+            {
+                value: 'Display Problem',
+                shortName: 'Display Problem',
+                desc: 'LED/LCD screen lines, blank ya picture fault',
+                photo: createServiceGraphic(
+                    'DISPLAY PROBLEM',
+                    'Screen Lines & No Picture',
+                    '#002266', '#1d4ed8',
+                    '<rect x="-42" y="-34" width="84" height="54" rx="5" fill="#0f172a" stroke="#FFD700" stroke-width="2.5"/><line x1="-34" y1="-16" x2="34" y2="-16" stroke="#f87171" stroke-width="2.5"/><line x1="-34" y1="-4" x2="34" y2="-4" stroke="#facc15" stroke-width="2.5"/><line x1="-10" y1="26" x2="10" y2="26" stroke="#FFD700" stroke-width="3"/>'
+                )
+            },
+            {
+                value: 'Sound Problem',
+                shortName: 'Sound Problem',
+                desc: 'Speaker crackle, no audio ya volume fault',
+                photo: createServiceGraphic(
+                    'SOUND PROBLEM',
+                    'Speaker & Audio Fault',
+                    '#1e1b4b', '#4338ca',
+                    '<polygon points="-24,-14 -8,-14 10,-28 10,28 -8,14 -24,14" fill="#FFD700"/><path d="M20,-14 A20,20 0 0,1 20,14" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/><path d="M28,-24 A32,32 0 0,1 28,24" fill="none" stroke="#a5f3fc" stroke-width="3" stroke-linecap="round"/>'
+                )
+            },
+            {
+                value: 'Panel Repair',
+                shortName: 'Panel Repair',
+                desc: 'COF / T-Con / panel servicing & testing',
+                photo: createServiceGraphic(
+                    'PANEL REPAIR',
+                    'T-Con & COF Servicing',
+                    '#0f172a', '#0369a1',
+                    '<rect x="-38" y="-32" width="76" height="52" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/><rect x="-18" y="-16" width="36" height="20" rx="2" fill="#0ea5e9" fill-opacity="0.3" stroke="#FFD700" stroke-width="1.5"/><path d="M-24 20 L-24 30 M0 20 L0 30 M24 20 L24 30" stroke="#FFD700" stroke-width="2.5"/>'
+                )
+            },
+            {
+                value: 'Smart TV Setup & Software',
+                shortName: 'Smart TV Setup',
+                desc: 'Software update, Wi-Fi, apps & wall mount',
+                photo: createServiceGraphic(
+                    'SMART TV & WI-FI',
+                    'Software, Apps & Mounting',
+                    '#0c4a6e', '#0284c7',
+                    '<rect x="-38" y="-32" width="76" height="48" rx="5" fill="#0f172a" stroke="#FFD700" stroke-width="2.5"/><path d="M-14,-4 A20,20 0 0,1 14,-4" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><path d="M-8,4 A10,10 0 0,1 8,4" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><circle cx="0" cy="10" r="3" fill="#FFD700"/>'
+                )
+            },
+            {
+                value: 'Backlight & Motherboard',
+                shortName: 'Backlight / Board',
+                desc: 'LED strip backlight & main/power board repair',
+                photo: createServiceGraphic(
+                    'BACKLIGHT & BOARD',
+                    'LED Strip & Main PCB',
+                    '#1e293b', '#003399',
+                    '<rect x="-20" y="-22" width="40" height="40" rx="5" fill="#0f172a" stroke="#FFD700" stroke-width="2.5"/><path d="M-12,-22 L-12,-32 M0,-22 L0,-32 M12,-22 L12,-32 M-12,18 L-12,28 M0,18 L0,28 M12,18 L12,28 M-20,-10 L-30,-10 M-20,6 L-30,6 M20,-10 L30,-10 M20,6 L30,6" stroke="#38bdf8" stroke-width="2.5"/>'
+                )
+            },
+            {
+                value: 'Washing Machine Repair',
+                shortName: 'Washing Machine',
+                desc: 'Top/front load drum, spin, drain, motor & PCB',
+                photo: createServiceGraphic(
+                    'WASHING MACHINE',
+                    'Drum, Motor & Drain Repair',
+                    '#1e3a8a', '#0ea5e9',
+                    '<rect x="-28" y="-34" width="56" height="66" rx="7" fill="#f8fafc" stroke="#002266" stroke-width="3"/><circle cx="0" cy="4" r="18" fill="#bae6fd" stroke="#0284c7" stroke-width="3"/><path d="M-9,4 Q0,-4 9,4 T27,4" fill="none" stroke="#0284c7" stroke-width="2.5" transform="translate(-9,0)"/><circle cx="14" cy="-23" r="3" fill="#16a34a"/>'
+                )
+            },
+            {
+                value: 'AC / Fridge / Fan Repair',
+                shortName: 'AC / Fridge / Fan',
+                desc: 'Cooling, gas/coil, motor & fan servicing',
+                photo: createServiceGraphic(
+                    'AC • FRIDGE • FAN',
+                    'Cooling & Motor Servicing',
+                    '#083344', '#0e7490',
+                    '<line x1="0" y1="-32" x2="0" y2="28" stroke="#bae6fd" stroke-width="3" stroke-linecap="round"/><line x1="-26" y1="-17" x2="26" y2="13" stroke="#bae6fd" stroke-width="3" stroke-linecap="round"/><line x1="-26" y1="13" x2="26" y2="-17" stroke="#bae6fd" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="-2" r="7" fill="#FFD700"/>'
+                )
+            },
+            {
+                value: 'Mixer / Grinder / Appliance',
+                shortName: 'Appliance Repair',
+                desc: 'Mixer grinder, iron, geyser & home appliances',
+                photo: createServiceGraphic(
+                    'HOME APPLIANCES',
+                    'Mixer, Iron & Geyser',
+                    '#311042', '#7e22ce',
+                    '<circle cx="-8" cy="-4" r="18" fill="none" stroke="#FFD700" stroke-width="4" stroke-dasharray="7 4"/><circle cx="16" cy="12" r="12" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-dasharray="5 3"/>'
+                )
+            },
+            {
+                value: 'Printer & Inverter Service',
+                shortName: 'Printer & Inverter',
+                desc: 'Inkjet/laser printer & home inverter servicing',
+                photo: createServiceGraphic(
+                    'PRINTER & INVERTER',
+                    'Inkjet/Laser & Battery Backup',
+                    '#172554', '#2563eb',
+                    '<rect x="-32" y="-12" width="64" height="28" rx="5" fill="#e2e8f0" stroke="#0f172a" stroke-width="2.5"/><rect x="-20" y="-28" width="40" height="16" rx="2" fill="#ffffff" stroke="#0f172a" stroke-width="2"/><rect x="-20" y="10" width="40" height="18" rx="2" fill="#fde047" stroke="#0f172a" stroke-width="2"/><line x1="-12" y1="17" x2="12" y2="17" stroke="#0f172a" stroke-width="2"/>'
+                )
+            },
+            {
+                value: 'Plumber Mistri & Motor Pump Repair',
+                shortName: 'Plumber & Pump',
+                desc: 'Pipe fitting, tanki, tap & motor pump repair',
+                photo: createServiceGraphic(
+                    'PLUMBER & PUMP',
+                    'Pipe, Tanki & Water Motor',
+                    '#042f2e', '#0f766e',
+                    '<path d="M-32,-12 L8,-12 L8,-26 L24,-26 L24,4 L8,4 L8,18 L-10,18 L-10,4 L-32,4 Z" fill="#38bdf8" stroke="#FFD700" stroke-width="2"/><path d="M16,12 C10,22 10,28 16,32 C22,28 22,22 16,12 Z" fill="#7dd3fc"/>'
+                )
+            },
+            {
+                value: LABOUR_SERVICE_VALUE,
+                shortName: 'Labour / Mazdoor',
+                desc: 'Kisi bhi kaam ke liye daily mazdoor / helper',
+                photo: createServiceGraphic(
+                    'LABOUR / MAZDOOR',
+                    'Daily Helper & Work Force',
+                    '#431407', '#ea580c',
+                    '<path d="M-28,6 A28,28 0 0,1 28,6 Z" fill="#FFD700" stroke="#0f172a" stroke-width="2.5"/><rect x="-34" y="6" width="68" height="8" rx="4" fill="#fde047" stroke="#0f172a" stroke-width="2"/><rect x="-6" y="-22" width="12" height="28" rx="2" fill="#f97316" stroke="#0f172a" stroke-width="2"/>'
+                )
+            },
+            {
+                value: 'Putti & Painting',
+                shortName: 'Putti & Painting',
+                desc: 'Wall putti, primer & interior/exterior paint',
+                photo: createServiceGraphic(
+                    'PUTTI & PAINTING',
+                    'Wall Putti & Color Finish',
+                    '#4a044e', '#a21caf',
+                    '<rect x="-32" y="-26" width="52" height="22" rx="5" fill="#FFD700" stroke="#0f172a" stroke-width="2.5"/><path d="M20,-15 L30,-15 L30,4 L-4,4 L-4,12" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/><rect x="-11" y="12" width="14" height="20" rx="3" fill="#f8fafc" stroke="#0f172a" stroke-width="2"/>'
+                )
+            },
+            {
+                value: 'Other Home Service',
+                shortName: 'Other Service',
+                desc: 'Any custom repair ya ghar ka kaam',
+                photo: createServiceGraphic(
+                    'OTHER HOME SERVICE',
+                    'Custom Repair & Maintenance',
+                    '#001d59', '#1e40af',
+                    '<path d="M-24,-18 L-8,-2 L-16,6 L-32,-10 A18,18 0 0,0 -8,14 L18,30 L28,20 L12,-6 A18,18 0 0,0 -24,-18 Z" fill="#FFD700" stroke="#0f172a" stroke-width="2"/>'
+                )
+            }
+        ];
+
+        const firebaseConfig = {
+            apiKey: "",
+            authDomain: "",
+            databaseURL: "",
+            projectId: "",
+            storageBucket: "",
+            messagingSenderId: "",
+            appId: ""
+        };
+
+        let db = null;
+        let auth = null;
+        let cloudEnabled = false;
+        let authEnabled = false;
+        let confirmationResultRef = null;
+        let localOtpCode = '';
+        let pendingOtpPhone = '';
+        let lastCoords = null;
+        let activeTrackingOrderId = null;
+        let autoGeoWatchId = null;
+        const tempPhotos = {};
+
+        function setupPosterImage() {
+            const poster = document.getElementById('posterImg');
+            if (!poster) return;
+            poster.onerror = () => {
+                poster.onerror = null;
+                poster.src = FALLBACK_POSTER_SVG;
+            };
+            if (!poster.getAttribute('src')) {
+                poster.src = FALLBACK_POSTER_SVG;
+            }
+        }
+
+        function setupCustomQrImage() {
+            const qrImg = document.getElementById('upiQrImg');
+            if (!qrImg) return;
+            qrImg.src = CUSTOM_QR_FILE;
+            qrImg.onerror = () => {
+                const upi = (document.getElementById('upiId')?.value || DEFAULT_UPI_ID).trim() || DEFAULT_UPI_ID;
+                const amtVal = parseFloat(document.getElementById('payAmount')?.value || '0') || 0;
+                const pn = encodeURIComponent('Manish Kumar - ATS');
+                const tn = encodeURIComponent('ATS Service Payment');
+                const upiUri = amtVal > 0
+                    ? `upi://pay?pa=${encodeURIComponent(upi)}&pn=${pn}&am=${amtVal}&cu=INR&tn=${tn}`
+                    : `upi://pay?pa=${encodeURIComponent(upi)}&pn=${pn}&cu=INR&tn=${tn}`;
+                qrImg.onerror = null;
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=210x210&data=${encodeURIComponent(upiUri)}`;
+            };
+            updateQrMeta();
+        }
+
+        function updateQrMeta() {
+            const upi = (document.getElementById('upiId')?.value || DEFAULT_UPI_ID).trim() || DEFAULT_UPI_ID;
+            const amtVal = parseFloat(document.getElementById('payAmount')?.value || '0') || 0;
+            const metaText = document.getElementById('qrMetaText');
+            if (metaText) {
+                metaText.textContent = amtVal > 0
+                    ? `UPI: ${upi} • Amount: ₹${amtVal} • Manish Kumar`
+                    : `UPI: ${upi} • Manish Kumar (Scan & Pay)`;
+            }
+        }
+
+        function getServiceMeta(serviceValue) {
+            return SERVICES_DATA.find(s => s.value === serviceValue) || SERVICES_DATA[0];
+        }
+
+        function renderServicesCatalog() {
+            const grid = document.getElementById('servicesGrid');
+            const select = document.getElementById('problem');
+            const currentVal = select?.value || SERVICES_DATA[0].value;
+
+            if (select) {
+                select.innerHTML = SERVICES_DATA.map(s =>
+                    `<option value="${s.value}">${s.value}</option>`
+                ).join('');
+                select.value = currentVal;
+            }
+
+            if (grid) {
+                grid.innerHTML = SERVICES_DATA.map((s, idx) => `
+                    <div class="card ${s.value === currentVal ? 'selected' : ''}" data-service="${s.value}" onclick="selectService('${s.value.replace(/'/g, "\\'")}')">
+                        <img class="service-photo" id="gridPhoto_${idx}" src="${s.photo}" alt="${s.shortName}">
+                        <h3>${s.shortName}</h3>
+                    </div>
+                `).join('');
+
+                SERVICES_DATA.forEach((s, idx) => {
+                    const img = document.getElementById(`gridPhoto_${idx}`);
+                    if (img) {
+                        img.onerror = () => {
+                            img.onerror = null;
+                            img.src = s.photo;
+                        };
+                    }
+                });
+            }
+
+            updateSelectedServicePreview();
+        }
+
+        function updateSelectedServicePreview() {
+            const preview = document.getElementById('selectedServicePreview');
+            const select = document.getElementById('problem');
+            if (!preview || !select) return;
+
+            const meta = getServiceMeta(select.value);
+            preview.innerHTML = `
+                <img id="previewServiceImg" src="${meta.photo}" alt="${meta.shortName}">
+                <div class="meta">
+                    <strong>${meta.value}</strong>
+                    <span>${meta.desc}</span>
+                </div>
+            `;
+
+            const pImg = document.getElementById('previewServiceImg');
+            if (pImg) {
+                pImg.onerror = () => {
+                    pImg.onerror = null;
+                    pImg.src = meta.photo;
+                };
+            }
+
+            document.querySelectorAll('#servicesGrid .card').forEach(card => {
+                card.classList.toggle('selected', card.getAttribute('data-service') === select.value);
+            });
+        }
+
+        function getBranchFee(branchName) {
+            return BRANCH_FEES[branchName] ?? 300;
+        }
+
+        function isLabourSelected() {
+            return document.getElementById('problem')?.value === LABOUR_SERVICE_VALUE;
+        }
+
+        function updateLabourEstimate() {
+            const box = document.getElementById('labourOptionsBox');
+            const estEl = document.getElementById('labourEstimateText');
+            if (!box || !estEl) return;
+
+            if (!isLabourSelected()) {
+                box.style.display = 'none';
+                return;
+            }
+
+            box.style.display = 'block';
+            const branchName = document.getElementById('branch')?.value || 'Khagaria';
+            const fee = getBranchFee(branchName);
+            const count = Math.max(1, parseInt(document.getElementById('labourCount')?.value || '1', 10) || 1);
+            const rate = Math.max(0, parseFloat(document.getElementById('labourRate')?.value || '500') || 0);
+            const total = fee + (count * rate);
+
+            estEl.textContent = `Estimated Total: ₹${total} (Branch ₹${fee} + ${count} Labour × ₹${rate}/day)`;
+        }
+
+        function onServiceChange() {
+            updateSelectedServicePreview();
+            updateLabourEstimate();
+        }
+
+        function updateBranchFeeUI() {
+            const branchName = document.getElementById('branch')?.value || 'Khagaria';
+            const fee = getBranchFee(branchName);
+            const feeEl = document.getElementById('branchFeeDisplay');
+            if (feeEl) {
+                feeEl.textContent = `💰 Branch Service Charge: ₹${fee} (${branchName})`;
+            }
+            updateLabourEstimate();
+        }
+
+        function onBranchChange() {
+            updateBranchFeeUI();
+            if (!lastCoords) return;
+            const branchName = document.getElementById('branch').value;
+            updateDistanceUI(lastCoords.lat, lastCoords.lng, branchName);
+        }
+
+        function safeLocalSet(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (err) {
+                alert('Browser storage full ho gaya hai! Nayi photos save karne ke liye purane orders/photos clear karein ya Firebase configure karein.');
+                return false;
+            }
+        }
+
+        function statusClass(status) {
+            if (status === 'Completed') return 'completed';
+            if (status === 'On The Way') return 'ontheway';
+            if (status === 'Confirmed') return 'confirmed';
+            if (status === 'Cancelled') return 'cancelled';
+            return 'pending';
+        }
+
+        function calcDistanceKm(lat1, lon1, lat2, lon2) {
+            const toRad = (v) => (v * Math.PI) / 180;
+            const R = 6371;
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return Number((R * c).toFixed(2));
+        }
+
+        function updateDistanceUI(lat, lng, branchName) {
+            const badge = document.getElementById('locBadge');
+            const details = document.getElementById('locDetails');
+            const hiddenInput = document.getElementById('liveLocLink');
+            const distInput = document.getElementById('distanceKm');
+            const rangeInput = document.getElementById('withinRange');
+
+            const bCoord = BRANCH_COORDS[branchName] || BRANCH_COORDS['Khagaria'];
+            const distKm = calcDistanceKm(lat, lng, bCoord.lat, bCoord.lng);
+            const link = `https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
+            const allowed = distKm <= MAX_SERVICE_KM;
+
+            hiddenInput.value = link;
+            distInput.value = String(distKm);
+            rangeInput.value = allowed ? 'yes' : 'no';
+
+            if (allowed) {
+                badge.textContent = `In Range (${distKm} km)`;
+                badge.style.color = '#16a34a';
+                details.innerHTML = `Lat: <b>${lat.toFixed(6)}</b>, Lng: <b>${lng.toFixed(6)}</b> | ${branchName} se Doori: <b>${distKm} km</b> (Max 25 km allowed)<br><a href="${link}" target="_blank">Google Maps Par Dekhein</a>`;
+            } else {
+                badge.textContent = `Out of Range (${distKm} km)`;
+                badge.style.color = '#dc2626';
+                details.innerHTML = `<span style="color:#dc2626; font-weight:600;">${branchName} branch se doori ${distKm} km hai, jo 20–25 km limit se bahar hai.</span> Booking allow nahi hogi.`;
+            }
+        }
+
+        function formatPhoneE164(rawPhone) {
+            const digits = (rawPhone || '').replace(/\D/g, '');
+            if (!digits) return '';
+            if (digits.length === 10) return `+91${digits}`;
+            if (digits.length > 10 && !rawPhone.trim().startsWith('+')) return `+${digits}`;
+            return rawPhone.trim();
+        }
+
+        function getCustomerSession() {
+            try {
+                return JSON.parse(localStorage.getItem('ats_customer_session_v1') || 'null');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setCustomerSession(sessionObj) {
+            if (sessionObj) {
+                localStorage.setItem('ats_customer_session_v1', JSON.stringify(sessionObj));
+            } else {
+                localStorage.removeItem('ats_customer_session_v1');
+            }
+            applyCustomerSession();
+        }
+
+        function applyCustomerSession() {
+            const sess = getCustomerSession();
+            const statusEl = document.getElementById('customerAuthStatus');
+            const logoutBtn = document.getElementById('logoutCustBtn');
+
+            if (sess && (sess.phone || sess.email)) {
+                const viaTag = sess.method ? ` [${sess.method}]` : '';
+                const label = sess.name ? `${sess.name} (${sess.phone || sess.email})${viaTag}` : `${sess.phone || sess.email}${viaTag}`;
+                statusEl.textContent = `Logged in: ${label}`;
+                if (logoutBtn) logoutBtn.style.display = 'inline-block';
+
+                const custName = document.getElementById('custName');
+                const custPhone = document.getElementById('custPhone');
+                const custEmail = document.getElementById('custEmail');
+                const payName = document.getElementById('payName');
+                const fbName = document.getElementById('fbName');
+
+                if (custName && !custName.value && sess.name) custName.value = sess.name;
+                if (custPhone && !custPhone.value && sess.phone) custPhone.value = sess.phone;
+                if (custEmail && !custEmail.value && sess.email) custEmail.value = sess.email;
+                if (payName && !payName.value && sess.name) payName.value = sess.name;
+                if (fbName && !fbName.value && sess.name) fbName.value = sess.name;
+            } else {
+                statusEl.textContent = 'Guest User (Login nahi kiya)';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+            }
+
+            renderMyOrders();
+        }
+
+        function openAccountTab() {
+            const tabBtn = document.querySelectorAll('.nav-btn')[1];
+            switchTab('account', tabBtn);
+        }
+
+        function ensureRecaptcha() {
+            if (!auth || !window.firebase) return null;
+            if (!window.atsRecaptchaVerifier) {
+                window.atsRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    size: 'normal'
+                });
+            }
+            return window.atsRecaptchaVerifier;
+        }
+
+        async function sendMobileOtp() {
+            const name = document.getElementById('loginCustName').value.trim();
+            const rawPhone = document.getElementById('loginCustPhone').value.trim();
+            const e164 = formatPhoneE164(rawPhone);
+
+            if (!e164 || e164.replace(/\D/g, '').length < 10) {
+                alert('Kripya sahi 10-digit Mobile Number daalein.');
+                return;
+            }
+
+            pendingOtpPhone = e164;
+            document.getElementById('otpVerifyBox').style.display = 'block';
+
+            if (authEnabled && auth) {
+                try {
+                    const verifier = ensureRecaptcha();
+                    confirmationResultRef = await auth.signInWithPhoneNumber(e164, verifier);
+                    document.getElementById('otpHintText').textContent = `OTP ${e164} par bhej diya gaya hai.`;
+                    alert(`OTP ${e164} par bhej diya gaya hai.`);
+                    return;
+                } catch (err) {
+                    alert(`Firebase OTP bhejne mein dikkat aayi: ${err.message}. Local OTP mode use kiya ja raha hai.`);
+                }
+            }
+
+            localOtpCode = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById('otpHintText').textContent = `Local OTP: ${localOtpCode}`;
+            alert(`Aapka Verification OTP hai: ${localOtpCode}`);
+        }
+
+        async function verifyMobileOtp() {
+            const code = document.getElementById('loginOtpCode').value.trim();
+            const name = document.getElementById('loginCustName').value.trim();
+
+            if (!code) {
+                alert('Kripya OTP daalein.');
+                return;
+            }
+
+            if (confirmationResultRef) {
+                try {
+                    const res = await confirmationResultRef.confirm(code);
+                    const user = res.user;
+                    setCustomerSession({
+                        name: name || user.displayName || 'Customer',
+                        phone: user.phoneNumber || pendingOtpPhone,
+                        email: user.email || '',
+                        method: 'Phone OTP',
+                        loggedInAt: new Date().toLocaleString('en-IN')
+                    });
+                    document.getElementById('otpVerifyBox').style.display = 'none';
+                    confirmationResultRef = null;
+                    alert('Mobile OTP verify ho gaya aur login safal raha!');
+                    return;
+                } catch (err) {
+                    alert(`OTP galat hai ya expire ho gaya: ${err.message}`);
+                    return;
+                }
+            }
+
+            if (localOtpCode && code === localOtpCode) {
+                setCustomerSession({
+                    name: name || 'Customer',
+                    phone: pendingOtpPhone,
+                    email: '',
+                    method: 'Phone OTP',
+                    loggedInAt: new Date().toLocaleString('en-IN')
+                });
+                document.getElementById('otpVerifyBox').style.display = 'none';
+                localOtpCode = '';
+                alert('OTP verify ho gaya! Aap login ho gaye hain.');
+            } else {
+                alert('Galat OTP daala gaya hai. Kripya dobara check karein.');
+            }
+        }
+
+        function loginWithEmail() {
+            const name = document.getElementById('loginCustName').value.trim();
+            const email = document.getElementById('loginCustEmail').value.trim().toLowerCase();
+            const phone = document.getElementById('loginCustPhone').value.trim();
+
+            if (!email || !email.includes('@')) {
+                alert('Kripya sahi Gmail / Email ID daalein.');
+                return;
+            }
+
+            setCustomerSession({
+                name: name || email.split('@')[0],
+                phone,
+                email,
+                method: 'Gmail',
+                loggedInAt: new Date().toLocaleString('en-IN')
+            });
+            alert('Gmail se login safal raha!');
+        }
+
+        function logoutCustomer() {
+            if (authEnabled && auth && auth.currentUser) {
+                auth.signOut().catch(() => {});
+            }
+            setCustomerSession(null);
+            document.getElementById('loginCustName').value = '';
+            document.getElementById('loginCustPhone').value = '';
+            document.getElementById('loginCustEmail').value = '';
+            document.getElementById('loginOtpCode').value = '';
+            document.getElementById('otpVerifyBox').style.display = 'none';
+            alert('Aap logout ho gaye hain.');
+        }
+
+        function renderTechTrackerInfo(o) {
+            const isAutoActive = activeTrackingOrderId === o.id && autoGeoWatchId !== null;
+            const autoBadge = isAutoActive
+                ? ` <span class="status-badge completed">● Auto GPS Live</span>`
+                : '';
+
+            const assignedText = o.assignedTechName
+                ? `<b>Assigned Tech:</b> ${o.assignedTechName}${o.assignedTechPhone ? ` (${o.assignedTechPhone})` : ''}${autoBadge}`
+                : `<b>Assigned Tech:</b> Abhi assign nahi hua (Owner confirmation pending)${autoBadge}`;
+
+            let locHtml = '';
+            if (o.techLocation && o.techLocation.link) {
+                const kmText = (o.techLocation.distanceToBranchKm !== undefined && o.techLocation.distanceToBranchKm !== '')
+                    ? ` | ${o.branch} branch se ${o.techLocation.distanceToBranchKm} km`
+                    : '';
+                locHtml = `<br><b>Tech Live Location:</b> ${o.techLocation.note || 'Moving / Active'}${kmText} — <a href="${o.techLocation.link}" target="_blank">Map Par Dekhein</a> <small>(Updated: ${o.techLocation.updatedAt || ''})</small>`;
+            } else {
+                locHtml = `<br><b>Tech Live Location:</b> Abhi live GPS share nahi hui hai.`;
+            }
+
+            return `<div class="track-live-box">${assignedText}${locHtml}</div>`;
+        }
+
+        function stopAutoTechTracking(silent = false) {
+            if (autoGeoWatchId !== null && navigator.geolocation) {
+                navigator.geolocation.clearWatch(autoGeoWatchId);
+            }
+            autoGeoWatchId = null;
+            activeTrackingOrderId = null;
+            if (!silent) {
+                alert('Automatic Technician Live GPS band kar diya gaya hai.');
+            }
+            if (document.getElementById('techDashboard').style.display === 'block') {
+                renderTechOrders();
+            }
+        }
+
+        function startAutoTechTracking(orderId) {
+            if (!navigator.geolocation) {
+                alert('Is device mein GPS location support nahi hai.');
+                return;
+            }
+
+            stopAutoTechTracking(true);
+            activeTrackingOrderId = orderId;
+
+            autoGeoWatchId = navigator.geolocation.watchPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const orders = getOrders();
+                    const o = orders.find(item => item.id === orderId);
+                    if (!o) {
+                        stopAutoTechTracking(true);
+                        return;
+                    }
+                    if (o.status === 'Completed' || o.status === 'Cancelled') {
+                        stopAutoTechTracking(true);
+                        return;
+                    }
+
+                    const bCoord = BRANCH_COORDS[o.branch] || BRANCH_COORDS['Khagaria'];
+                    const distKm = calcDistanceKm(lat, lng, bCoord.lat, bCoord.lng);
+                    const link = `https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
+
+                    o.techLocation = {
+                        lat: Number(lat.toFixed(6)),
+                        lng: Number(lng.toFixed(6)),
+                        link,
+                        distanceToBranchKm: distKm,
+                        note: `Auto Live GPS (${distKm} km from ${o.branch})`,
+                        updatedAt: new Date().toLocaleTimeString('en-IN')
+                    };
+                    if (o.status === 'Pending' || o.status === 'Confirmed') {
+                        o.status = 'On The Way';
+                    }
+
+                    saveOrders(orders);
+                },
+                (err) => {
+                    console.warn('Auto GPS watch error:', err.message);
+                },
+                { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+            );
+
+            alert('Automatic Live GPS chalu ho gaya hai! Jaise-jaise technician chalega, location khud update hogi.');
+            renderTechOrders();
+        }
+
+        function cancelOrderByCustomer(orderId) {
+            const orders = getOrders();
+            const o = orders.find(item => item.id === orderId);
+            if (!o) return;
+            if (o.status === 'Completed' || o.status === 'Cancelled') {
+                alert(`Yeh order pehle hi ${o.status} hai.`);
+                return;
+            }
+            if (!confirm(`Kya aap Order ${o.orderCode} cancel karna chahte hain?`)) return;
+            if (activeTrackingOrderId === orderId) stopAutoTechTracking(true);
+            o.status = 'Cancelled';
+            saveOrders(orders);
+            alert(`Order ${o.orderCode} cancel kar diya gaya hai.`);
+        }
+
+        function deleteOrderByOwner(orderId) {
+            const orders = getOrders();
+            const o = orders.find(item => item.id === orderId);
+            if (!o) return;
+            if (!confirm(`Kya aap Order ${o.orderCode} (${o.name}) ko permanent delete karna chahte hain?`)) return;
+            if (activeTrackingOrderId === orderId) stopAutoTechTracking(true);
+            const filtered = orders.filter(item => item.id !== orderId);
+            saveOrders(filtered);
+            alert(`Order ${o.orderCode} delete ho gaya.`);
+        }
+
+        function confirmAndAssignTech(orderId) {
+            const orders = getOrders();
+            const o = orders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const techName = (document.getElementById(`techName_${orderId}`)?.value || '').trim() || 'ATS Technician';
+            const techPhone = (document.getElementById(`techPhone_${orderId}`)?.value || '').trim();
+
+            o.assignedTechName = techName;
+            o.assignedTechPhone = techPhone;
+            o.confirmedAt = new Date().toLocaleString('en-IN');
+            if (o.status === 'Pending' || o.status === 'Cancelled') {
+                o.status = 'Confirmed';
+            }
+
+            if (saveOrders(orders)) {
+                alert(`Order ${o.orderCode} confirm ho gaya aur ${techName} ko assign kar diya gaya hai!`);
+            }
+        }
+
+        function buildTechnicianWorkSummary(orders) {
+            const map = new Map();
+
+            orders.forEach(o => {
+                const rawName = (o.assignedTechName || '').trim();
+                const key = rawName ? rawName.toLowerCase() : '__unassigned__';
+                if (!map.has(key)) {
+                    map.set(key, {
+                        name: rawName || 'Unassigned (Pending)',
+                        phone: o.assignedTechPhone || '-',
+                        totalAssigned: 0,
+                        completed: 0,
+                        active: 0,
+                        cancelled: 0,
+                        totalBill: 0,
+                        paidAmount: 0,
+                        jobs: []
+                    });
+                }
+                const entry = map.get(key);
+                if (o.assignedTechPhone && entry.phone === '-') {
+                    entry.phone = o.assignedTechPhone;
+                }
+
+                const bill = Number(o.billAmount) || 0;
+                entry.totalAssigned += 1;
+                entry.totalBill += bill;
+                if (o.paid) entry.paidAmount += bill;
+
+                if (o.status === 'Completed') {
+                    entry.completed += 1;
+                } else if (o.status === 'Cancelled') {
+                    entry.cancelled += 1;
+                } else {
+                    entry.active += 1;
+                }
+
+                entry.jobs.push(`${o.orderCode} (${o.problem} - ${o.status})`);
+            });
+
+            return Array.from(map.values()).sort((a, b) => b.completed - a.completed || b.totalAssigned - a.totalAssigned);
+        }
+
+        function renderTechnicianWorkReportHtml(orders) {
+            const summary = buildTechnicianWorkSummary(orders);
+            if (!summary.length) {
+                return `<p style="font-size:12.5px; color:#64748b;">Abhi koi technician work record nahi hai.</p>`;
+            }
+
+            const rows = summary.map(t => `
+                <tr>
+                    <td>
+                        <b>${t.name}</b><br>
+                        <small style="color:#475569;">${t.phone !== '-' ? `<a href="tel:${t.phone}">${t.phone}</a>` : 'No Phone'}</small>
+                    </td>
+                    <td><b>${t.totalAssigned}</b></td>
+                    <td><span class="status-badge completed" style="margin:0;">${t.completed}</span></td>
+                    <td><span class="status-badge ontheway" style="margin:0;">${t.active}</span></td>
+                    <td>
+                        <b>₹${t.totalBill}</b><br>
+                        <small style="color:#15803d;">Paid: ₹${t.paidAmount}</small>
+                    </td>
+                    <td><small>${t.jobs.join(', ')}</small></td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="table-wrap">
+                    <table class="tech-report-table">
+                        <thead>
+                            <tr>
+                                <th>Technician</th>
+                                <th>Total</th>
+                                <th>Done</th>
+                                <th>Active</th>
+                                <th>Bill / Paid</th>
+                                <th>Kaam Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderMyOrders() {
+            const box = document.getElementById('myOrdersList');
+            if (!box) return;
+            const sess = getCustomerSession();
+            if (!sess || (!sess.phone && !sess.email)) {
+                box.innerHTML = `<p style="font-size:12.5px; color:#64748b;">Login karne ke baad aapke orders yahan dikhenge.</p>`;
+                return;
+            }
+
+            const phoneNorm = (sess.phone || '').replace(/\D/g, '');
+            const emailNorm = (sess.email || '').toLowerCase();
+
+            const myOrders = getOrders().filter(o => {
+                const oPhoneNorm = (o.phone || '').replace(/\D/g, '');
+                const oEmailNorm = (o.email || '').toLowerCase();
+                const matchPhone = phoneNorm && oPhoneNorm && (oPhoneNorm === phoneNorm || oPhoneNorm.endsWith(phoneNorm) || phoneNorm.endsWith(oPhoneNorm));
+                const matchEmail = emailNorm && oEmailNorm && oEmailNorm === emailNorm;
+                return matchPhone || matchEmail;
+            });
+
+            if (!myOrders.length) {
+                box.innerHTML = `<p style="font-size:12.5px; color:#64748b;">Is account se abhi koi order nahi mila.</p>`;
+                return;
+            }
+
+            box.innerHTML = myOrders.map(o => `
+                <div class="order-card">
+                    <h4>${o.orderCode} — ${o.problem} (${o.branch})</h4>
+                    ${o.labourCount ? `<p><b>Labour:</b> ${o.labourCount} × ₹${o.labourRate}/day</p>` : ''}
+                    <p><b>Booked:</b> ${o.createdAt || ''} | <b>Address:</b> ${o.address}</p>
+                    ${o.distanceKm ? `<p><b>Customer Distance:</b> ${o.distanceKm} km</p>` : ''}
+                    <span class="status-badge ${statusClass(o.status)}">${o.status}</span>
+                    <span class="status-badge ${o.paid ? 'paid-badge' : 'unpaid-badge'}">${o.paid ? 'Paid' : 'Unpaid'}</span>
+                    <span class="status-badge" style="background:#fef3c7; color:#92400e;">Bill: ₹${o.billAmount || 0}</span>
+                    ${renderTechTrackerInfo(o)}
+                    ${o.billNote ? `<p><b>Note:</b> ${o.billNote}</p>` : ''}
+                    ${(o.status !== 'Completed' && o.status !== 'Cancelled')
+                        ? `<button type="button" class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="cancelOrderByCustomer(${o.id})">✖ Cancel Order</button>`
+                        : ''}
+                </div>
+            `).join('');
+        }
+
+        function initCloudSync() {
+            try {
+                if (firebaseConfig.apiKey && firebaseConfig.databaseURL && window.firebase) {
+                    if (!firebase.apps.length) {
+                        firebase.initializeApp(firebaseConfig);
+                    }
+                    db = firebase.database();
+                    cloudEnabled = true;
+                    document.getElementById('syncStatus').textContent = 'Mode: Live Firebase Cloud Sync';
+
+                    if (firebase.auth) {
+                        auth = firebase.auth();
+                        authEnabled = true;
+                    }
+
+                    db.ref('ats/orders').on('value', (snap) => {
+                        const data = snap.val();
+                        if (data) {
+                            const arr = Object.values(data).sort((a, b) => b.id - a.id);
+                            safeLocalSet('ats_orders_v5', arr);
+                            refreshAllViews();
+                        }
+                    });
+
+                    db.ref('ats/payments').on('value', (snap) => {
+                        const data = snap.val();
+                        if (data) {
+                            const arr = Object.values(data).sort((a, b) => b.id - a.id);
+                            safeLocalSet('ats_payments_v5', arr);
+                            renderPayments();
+                        }
+                    });
+
+                    db.ref('ats/feedbacks').on('value', (snap) => {
+                        const data = snap.val();
+                        if (data) {
+                            const arr = Object.values(data).sort((a, b) => b.id - a.id);
+                            safeLocalSet('ats_feedback_v5', arr);
+                            renderFeedbacks();
+                        }
+                    });
+                } else {
+                    document.getElementById('syncStatus').textContent = 'Mode: Local Storage (Offline Ready)';
+                }
+            } catch (e) {
+                cloudEnabled = false;
+                authEnabled = false;
+            }
+        }
+
+        function getOrders() {
+            return JSON.parse(localStorage.getItem('ats_orders_v5') || '[]');
+        }
+
+        function saveOrders(orders) {
+            if (!safeLocalSet('ats_orders_v5', orders)) return false;
+            if (cloudEnabled && db) {
+                const mapObj = {};
+                orders.forEach(o => { mapObj[o.id] = o; });
+                db.ref('ats/orders').set(mapObj);
+            }
+            refreshAllViews();
+            return true;
+        }
+
+        function getPayments() {
+            return JSON.parse(localStorage.getItem('ats_payments_v5') || '[]');
+        }
+
+        function savePayments(pays) {
+            if (!safeLocalSet('ats_payments_v5', pays)) return false;
+            if (cloudEnabled && db) {
+                const mapObj = {};
+                pays.forEach(p => { mapObj[p.id] = p; });
+                db.ref('ats/payments').set(mapObj);
+            }
+            renderPayments();
+            return true;
+        }
+
+        function getFeedbacks() {
+            return JSON.parse(localStorage.getItem('ats_feedback_v5') || '[]');
+        }
+
+        function saveFeedbacks(fbs) {
+            if (!safeLocalSet('ats_feedback_v5', fbs)) return false;
+            if (cloudEnabled && db) {
+                const mapObj = {};
+                fbs.forEach(f => { mapObj[f.id] = f; });
+                db.ref('ats/feedbacks').set(mapObj);
+            }
+            renderFeedbacks();
+            return true;
+        }
+
+        function refreshAllViews() {
+            populateOrderSelect();
+            renderMyOrders();
+            if (document.getElementById('track').classList.contains('active')) renderTrackedOrders();
+            if (document.getElementById('ownerDashboard').style.display === 'block') renderOwnerOrders();
+            if (document.getElementById('techDashboard').style.display === 'block') renderTechOrders();
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (btn) btn.classList.add('active');
+
+            if (tabId === 'account') renderMyOrders();
+            if (tabId === 'track') renderTrackedOrders();
+            if (tabId === 'payment') { populateOrderSelect(); renderPayments(); updateQrMeta(); }
+            if (tabId === 'feedback') renderFeedbacks();
+            if (tabId === 'owner' && document.getElementById('ownerDashboard').style.display === 'block') renderOwnerOrders();
+            if (tabId === 'tech' && document.getElementById('techDashboard').style.display === 'block') renderTechOrders();
+        }
+
+        function selectService(serviceName) {
+            const sel = document.getElementById('problem');
+            if (sel) {
+                sel.value = serviceName;
+                updateSelectedServicePreview();
+                updateLabourEstimate();
+            }
+            document.getElementById('bookingFormBox').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function quickPosterBook() {
+            selectService('Panel Repair');
+        }
+
+        function getLiveLocation() {
+            const badge = document.getElementById('locBadge');
+            const details = document.getElementById('locDetails');
+            const branchName = document.getElementById('branch').value;
+
+            if (!navigator.geolocation) {
+                badge.textContent = 'Unsupported';
+                details.textContent = 'Is browser mein GPS location support nahi hai.';
+                return;
+            }
+
+            badge.textContent = 'Fetching...';
+            details.textContent = 'GPS location nikali ja rahi hai, kripya allow karein...';
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    lastCoords = { lat, lng };
+                    updateDistanceUI(lat, lng, branchName);
+                },
+                (err) => {
+                    badge.textContent = 'Location Failed';
+                    badge.style.color = '#dc2626';
+                    details.textContent = `Location nahi mil saki (${err.message}). Kripya GPS on karein ya address manually likhein.`;
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function bookService() {
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const email = document.getElementById('custEmail').value.trim().toLowerCase();
+            const branch = document.getElementById('branch').value;
+            const problem = document.getElementById('problem').value;
+            const liveLocLink = document.getElementById('liveLocLink').value.trim();
+            const distanceKm = document.getElementById('distanceKm').value.trim();
+            const withinRange = document.getElementById('withinRange').value;
+            const address = document.getElementById('address').value.trim();
+
+            if (!name || !phone || !address) {
+                alert('Kripya Naam, Mobile Number aur Pura Address bharein.');
+                return;
+            }
+
+            if (withinRange === 'no') {
+                alert(`Maaf kijiye! ${branch} branch se aapki doori ${distanceKm} km hai. Sabhi branches mein sirf 20–25 km (max 25 km) tak hi booking hoti hai.`);
+                return;
+            }
+
+            if (!getCustomerSession()) {
+                setCustomerSession({
+                    name,
+                    phone,
+                    email,
+                    method: 'Booking Auto',
+                    loggedInAt: new Date().toLocaleString('en-IN')
+                });
+            }
+
+            const branchFee = getBranchFee(branch);
+            const labourActive = isLabourSelected();
+            const labourCount = labourActive ? Math.max(1, parseInt(document.getElementById('labourCount')?.value || '1', 10) || 1) : 0;
+            const labourRate = labourActive ? Math.max(0, parseFloat(document.getElementById('labourRate')?.value || '500') || 0) : 0;
+            const initialBill = branchFee + (labourCount * labourRate);
+            const defaultNote = labourActive
+                ? `Branch ₹${branchFee} + ${labourCount} Labour × ₹${labourRate}/day`
+                : `Branch Charge (₹${branchFee})`;
+
+            const now = Date.now();
+            const orderCode = 'ATS-' + String(now).slice(-6);
+            const newOrder = {
+                id: now,
+                orderCode,
+                name,
+                phone,
+                email,
+                branch,
+                branchFee,
+                problem,
+                labourCount,
+                labourRate,
+                liveLocLink,
+                distanceKm,
+                address,
+                status: 'Pending',
+                assignedTechName: '',
+                assignedTechPhone: '',
+                confirmedAt: '',
+                techLocation: null,
+                paid: false,
+                billAmount: initialBill,
+                billNote: defaultNote,
+                photos: { repaired: '', part: '', bill: '' },
+                createdAt: new Date().toLocaleString('en-IN')
+            };
+
+            const orders = getOrders();
+            orders.unshift(newOrder);
+            if (!saveOrders(orders)) return;
+
+            const msg =
+                `🛠️ *Apna Technical Services (ATS) - New Booking*\n` +
+                `Order ID: *${orderCode}*\n` +
+                `Naam: ${name}\n` +
+                `Phone: ${phone}\n` +
+                (email ? `Gmail: ${email}\n` : '') +
+                `Branch: ${branch} (Charge: ₹${branchFee})\n` +
+                (distanceKm ? `Distance: ${distanceKm} km (Within 25 km)\n` : '') +
+                `Service: ${problem}\n` +
+                (labourActive ? `Labour: ${labourCount} × ₹${labourRate}/day (Est. Bill: ₹${initialBill})\n` : '') +
+                `Address: ${address}\n` +
+                (liveLocLink ? `Live Location: ${liveLocLink}` : `Live Location: Not Shared`);
+
+            const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+            alert(`Order ${orderCode} (Est. Bill: ₹${initialBill}) book ho gaya! Ab WhatsApp open hoga.`);
+            window.open(waUrl, '_blank');
+
+            document.getElementById('address').value = '';
+            document.getElementById('liveLocLink').value = '';
+            document.getElementById('distanceKm').value = '';
+            document.getElementById('withinRange').value = 'unknown';
+            document.getElementById('locBadge').textContent = 'Location pending';
+            document.getElementById('locBadge').style.color = '#0284c7';
+            document.getElementById('locDetails').textContent = 'Abhi live location add nahi hui hai.';
+            lastCoords = null;
+        }
+
+        function renderTrackedOrders() {
+            const box = document.getElementById('trackResults');
+            if (!box) return;
+
+            const q = (document.getElementById('trackQuery')?.value || '').trim().toLowerCase();
+            const orders = getOrders();
+
+            const filtered = q
+                ? orders.filter(o =>
+                    String(o.orderCode || '').toLowerCase().includes(q) ||
+                    String(o.phone || '').toLowerCase().includes(q) ||
+                    String(o.email || '').toLowerCase().includes(q) ||
+                    String(o.name || '').toLowerCase().includes(q)
+                )
+                : orders.slice(0, 10);
+
+            if (!filtered.length) {
+                box.innerHTML = `<div class="box"><p style="font-size:12.5px; color:#64748b;">Koi matching order nahi mila.</p></div>`;
+                return;
+            }
+
+            box.innerHTML = filtered.map(o => `
+                <div class="order-card">
+                    <h4>${o.orderCode} — ${o.name} (${o.branch})</h4>
+                    <p><b>Service:</b> ${o.problem} | <b>Phone:</b> ${o.phone}</p>
+                    ${o.labourCount ? `<p><b>Labour:</b> ${o.labourCount} × ₹${o.labourRate}/day</p>` : ''}
+                    <p><b>Address:</b> ${o.address} ${o.liveLocLink ? `| <a href="${o.liveLocLink}" target="_blank">Customer Map</a>` : ''}</p>
+                    <span class="status-badge ${statusClass(o.status)}">${o.status}</span>
+                    <span class="status-badge ${o.paid ? 'paid-badge' : 'unpaid-badge'}">${o.paid ? 'Paid' : 'Unpaid'}</span>
+                    <span class="status-badge" style="background:#fef3c7; color:#92400e;">Bill: ₹${o.billAmount || 0}</span>
+                    ${renderTechTrackerInfo(o)}
+                    ${o.billNote ? `<div class="bill-box"><b>Bill / Kaam Vivaran:</b> ${o.billNote}</div>` : ''}
+                    ${renderPhotosGrid(o.photos)}
+                </div>
+            `).join('');
+        }
+
+        function renderPhotosGrid(photos) {
+            if (!photos || (!photos.repaired && !photos.part && !photos.bill)) return '';
+            const items = [
+                { key: 'repaired', label: 'Repaired Item', src: photos.repaired },
+                { key: 'part', label: 'Replaced Part', src: photos.part },
+                { key: 'bill', label: 'Bill / Receipt', src: photos.bill }
+            ].filter(i => i.src);
+
+            return `
+                <div class="photo-grid">
+                    ${items.map(i => `
+                        <div class="photo-card">
+                            <img src="${i.src}" alt="${i.label}">
+                            <span>${i.label}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function populateOrderSelect() {
+            const sel = document.getElementById('payOrderSelect');
+            if (!sel) return;
+            const prev = sel.value;
+            const orders = getOrders();
+            sel.innerHTML = `<option value="">-- General Payment (Order ID Nahi) --</option>` +
+                orders.map(o => `<option value="${o.id}">${o.orderCode} - ${o.name} (₹${o.billAmount || o.branchFee || 300})</option>`).join('');
+            if (prev && orders.some(o => String(o.id) === String(prev))) {
+                sel.value = prev;
+            }
+        }
+
+        function onPayOrderChange() {
+            const sel = document.getElementById('payOrderSelect');
+            const orderId = Number(sel?.value || 0);
+            if (!orderId) return;
+            const o = getOrders().find(item => item.id === orderId);
+            if (!o) return;
+            document.getElementById('payName').value = o.name || '';
+            document.getElementById('payAmount').value = o.billAmount || o.branchFee || 300;
+            updateQrMeta();
+        }
+
+        function copyUpiId() {
+            const upi = (document.getElementById('upiId')?.value || DEFAULT_UPI_ID).trim();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(upi).then(() => alert(`UPI ID copy ho gayi: ${upi}`)).catch(() => alert(`UPI ID: ${upi}`));
+            } else {
+                alert(`UPI ID: ${upi}`);
+            }
+        }
+
+        function openUpiPay() {
+            const upi = (document.getElementById('upiId')?.value || DEFAULT_UPI_ID).trim();
+            const amt = Math.max(1, parseFloat(document.getElementById('payAmount')?.value || '300') || 300);
+            const name = encodeURIComponent('Manish Kumar - ATS');
+            const note = encodeURIComponent('ATS Service Payment');
+            const intentUrl = `upi://pay?pa=${encodeURIComponent(upi)}&pn=${name}&am=${amt}&cu=INR&tn=${note}`;
+            window.location.href = intentUrl;
+        }
+
+        function recordPayment() {
+            const orderId = Number(document.getElementById('payOrderSelect')?.value || 0);
+            const name = (document.getElementById('payName')?.value || '').trim();
+            const amount = parseFloat(document.getElementById('payAmount')?.value || '0') || 0;
+            const upiId = (document.getElementById('upiId')?.value || DEFAULT_UPI_ID).trim();
+            const ref = (document.getElementById('payRef')?.value || '').trim();
+
+            if (!name || amount <= 0) {
+                alert('Kripya Customer ka Naam aur sahi Amount (₹) daalein.');
+                return;
+            }
+
+            const orders = getOrders();
+            const linkedOrder = orderId ? orders.find(o => o.id === orderId) : null;
+
+            const paymentEntry = {
+                id: Date.now(),
+                orderId: linkedOrder ? linkedOrder.id : null,
+                orderCode: linkedOrder ? linkedOrder.orderCode : 'GENERAL',
+                name,
+                amount,
+                upiId,
+                ref: ref || 'UPI Recorded',
+                createdAt: new Date().toLocaleString('en-IN')
+            };
+
+            const pays = getPayments();
+            pays.unshift(paymentEntry);
+            if (!savePayments(pays)) return;
+
+            if (linkedOrder) {
+                linkedOrder.paid = true;
+                if (!linkedOrder.billAmount || amount > linkedOrder.billAmount) {
+                    linkedOrder.billAmount = amount;
+                }
+                linkedOrder.billNote = `${linkedOrder.billNote ? linkedOrder.billNote + ' | ' : ''}Paid ₹${amount} (${paymentEntry.ref})`;
+                saveOrders(orders);
+            }
+
+            document.getElementById('payRef').value = '';
+            alert(`₹${amount} ka payment record save ho gaya${linkedOrder ? ` aur Order ${linkedOrder.orderCode} Paid mark ho gaya` : ''}!`);
+        }
+
+        function renderPayments() {
+            const box = document.getElementById('payHistory');
+            if (!box) return;
+            const pays = getPayments();
+            if (!pays.length) {
+                box.innerHTML = `<p style="font-size:12.5px; color:#64748b;">Abhi koi payment record nahi hai.</p>`;
+                return;
+            }
+            box.innerHTML = `<div class="section-title" style="margin-top:0;">Recent Payments</div>` +
+                pays.slice(0, 8).map(p => `
+                    <div class="fb-item">
+                        <b>${p.name}</b> — <b>₹${p.amount}</b> (${p.orderCode})<br>
+                        <small>Ref: ${p.ref} | UPI: ${p.upiId} | ${p.createdAt}</small>
+                    </div>
+                `).join('');
+        }
+
+        function submitFeedback() {
+            const name = (document.getElementById('fbName')?.value || '').trim();
+            const rating = document.getElementById('fbRating')?.value || '⭐⭐⭐⭐⭐ (5/5 - Bahut Accha)';
+            const message = (document.getElementById('fbMessage')?.value || '').trim();
+
+            if (!name || !message) {
+                alert('Kripya apna Naam aur Feedback message likhein.');
+                return;
+            }
+
+            const fbs = getFeedbacks();
+            fbs.unshift({
+                id: Date.now(),
+                name,
+                rating,
+                message,
+                createdAt: new Date().toLocaleString('en-IN')
+            });
+
+            if (saveFeedbacks(fbs)) {
+                document.getElementById('fbMessage').value = '';
+                alert('Dhanyavaad! Aapka feedback submit ho gaya hai.');
+            }
+        }
+
+        function renderFeedbacks() {
+            const box = document.getElementById('feedbackList');
+            if (!box) return;
+            const fbs = getFeedbacks();
+            if (!fbs.length) {
+                box.innerHTML = `<p style="font-size:12.5px; color:#64748b;">Abhi koi feedback nahi hai.</p>`;
+                return;
+            }
+            box.innerHTML = fbs.map(f => `
+                <div class="fb-item">
+                    <b>${f.name}</b> — <span>${f.rating}</span>
+                    <p style="margin:4px 0; font-size:13px;">${f.message}</p>
+                    <small style="color:#64748b;">${f.createdAt}</small>
+                </div>
+            `).join('');
+        }
+
+        function loginTech() {
+            const pin = (document.getElementById('techPin')?.value || '').trim();
+            if (pin !== TECH_PIN) {
+                alert('Galat Technician PIN!');
+                return;
+            }
+            document.getElementById('techLoginBox').style.display = 'none';
+            document.getElementById('techDashboard').style.display = 'block';
+            renderTechOrders();
+        }
+
+        function handlePhotoUpload(orderId, type, inputEl) {
+            const file = inputEl?.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (!tempPhotos[orderId]) tempPhotos[orderId] = {};
+                tempPhotos[orderId][type] = e.target.result;
+                alert(`${type.toUpperCase()} photo attach ho gayi. "Update Status & Bill" par click karke save karein.`);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function shareManualTechLocation(orderId) {
+            if (!navigator.geolocation) {
+                alert('GPS support nahi hai.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const orders = getOrders();
+                    const o = orders.find(item => item.id === orderId);
+                    if (!o) return;
+                    const bCoord = BRANCH_COORDS[o.branch] || BRANCH_COORDS['Khagaria'];
+                    const distKm = calcDistanceKm(lat, lng, bCoord.lat, bCoord.lng);
+                    o.techLocation = {
+                        lat: Number(lat.toFixed(6)),
+                        lng: Number(lng.toFixed(6)),
+                        link: `https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`,
+                        distanceToBranchKm: distKm,
+                        note: `Manual GPS (${distKm} km from ${o.branch})`,
+                        updatedAt: new Date().toLocaleTimeString('en-IN')
+                    };
+                    if (o.status === 'Pending' || o.status === 'Confirmed') {
+                        o.status = 'On The Way';
+                    }
+                    saveOrders(orders);
+                    alert('Aapki live location customer aur owner ke liye update ho gayi!');
+                },
+                (err) => alert(`Location error: ${err.message}`),
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function saveTechUpdate(orderId) {
+            const orders = getOrders();
+            const o = orders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const statusVal = document.getElementById(`techStatus_${orderId}`)?.value || o.status;
+            const billAmt = Math.max(0, parseFloat(document.getElementById(`techBillAmt_${orderId}`)?.value || o.billAmount || 0) || 0);
+            const billNote = (document.getElementById(`techBillNote_${orderId}`)?.value || '').trim();
+            const paidVal = document.getElementById(`techPaid_${orderId}`)?.value === 'true';
+
+            o.status = statusVal;
+            o.billAmount = billAmt;
+            o.billNote = billNote;
+            o.paid = paidVal;
+
+            if (tempPhotos[orderId]) {
+                o.photos = Object.assign({}, o.photos || {}, tempPhotos[orderId]);
+                delete tempPhotos[orderId];
+            }
+
+            if (statusVal === 'Completed' || statusVal === 'Cancelled') {
+                if (activeTrackingOrderId === orderId) stopAutoTechTracking(true);
+            }
+
+            if (saveOrders(orders)) {
+                alert(`Order ${o.orderCode} ka status aur bill update ho gaya!`);
+            }
+        }
+
+        function renderTechOrders() {
+            const box = document.getElementById('techOrdersList');
+            const summaryBox = document.getElementById('techWorkSummaryBox');
+            const allOrders = getOrders();
+
+            if (summaryBox) {
+                summaryBox.innerHTML = renderTechnicianWorkReportHtml(allOrders);
+            }
+
+            if (!box) return;
+
+            const q = (document.getElementById('techSearch')?.value || '').trim().toLowerCase();
+            const st = document.getElementById('techFilter')?.value || 'ALL';
+
+            const filtered = allOrders.filter(o => {
+                const matchStatus = st === 'ALL' || o.status === st;
+                const matchQuery = !q ||
+                    String(o.orderCode || '').toLowerCase().includes(q) ||
+                    String(o.name || '').toLowerCase().includes(q) ||
+                    String(o.branch || '').toLowerCase().includes(q) ||
+                    String(o.assignedTechName || '').toLowerCase().includes(q);
+                return matchStatus && matchQuery;
+            });
+
+            if (!filtered.length) {
+                box.innerHTML = `<div class="box"><p style="font-size:12.5px; color:#64748b;">Koi order nahi mila.</p></div>`;
+                return;
+            }
+
+            box.innerHTML = filtered.map(o => {
+                const isAuto = activeTrackingOrderId === o.id && autoGeoWatchId !== null;
+                return `
+                    <div class="order-card">
+                        <h4>${o.orderCode} — ${o.problem} (${o.branch})</h4>
+                        <p><b>Customer:</b> ${o.name} | <a href="tel:${o.phone}">${o.phone}</a></p>
+                        <p><b>Address:</b> ${o.address} ${o.liveLocLink ? `| <a href="${o.liveLocLink}" target="_blank">Customer Map</a>` : ''}</p>
+                        <span class="status-badge ${statusClass(o.status)}">${o.status}</span>
+                        <span class="status-badge ${o.paid ? 'paid-badge' : 'unpaid-badge'}">${o.paid ? 'Paid' : 'Unpaid'}</span>
+                        ${renderTechTrackerInfo(o)}
+
+                        <div class="row-flex" style="margin-top:8px;">
+                            <button type="button" class="btn btn-loc btn-sm" onclick="shareManualTechLocation(${o.id})">📍 Abhi Location Bhejein</button>
+                            ${!isAuto
+                                ? `<button type="button" class="btn btn-done btn-sm" onclick="startAutoTechTracking(${o.id})">▶ Auto GPS On</button>`
+                                : `<button type="button" class="btn btn-danger btn-sm" onclick="stopAutoTechTracking(false)">⏹ Auto GPS Stop</button>`
+                            }
+                        </div>
+
+                        <label>Order Status</label>
+                        <select id="techStatus_${o.id}">
+                            ${['Pending', 'Confirmed', 'On The Way', 'Completed', 'Cancelled'].map(s =>
+                                `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`
+                            ).join('')}
+                        </select>
+
+                        <label>Final Bill Amount (₹)</label>
+                        <input type="number" id="techBillAmt_${o.id}" value="${o.billAmount || 0}" min="0">
+
+                        <label>Kaam / Part / Bill Note</label>
+                        <input type="text" id="techBillNote_${o.id}" value="${(o.billNote || '').replace(/"/g, '&quot;')}" placeholder="Jaise: Backlight strip badli + service charge">
+
+                        <label>Payment Status</label>
+                        <select id="techPaid_${o.id}">
+                            <option value="false" ${!o.paid ? 'selected' : ''}>Unpaid</option>
+                            <option value="true" ${o.paid ? 'selected' : ''}>Paid</option>
+                        </select>
+
+                        <label>Photos Upload (Repaired / Part / Bill)</label>
+                        <div class="row-flex">
+                            <input type="file" accept="image/*" onchange="handlePhotoUpload(${o.id}, 'repaired', this)" style="font-size:11px; flex:1;">
+                            <input type="file" accept="image/*" onchange="handlePhotoUpload(${o.id}, 'part', this)" style="font-size:11px; flex:1;">
+                            <input type="file" accept="image/*" onchange="handlePhotoUpload(${o.id}, 'bill', this)" style="font-size:11px; flex:1;">
+                        </div>
+
+                        ${renderPhotosGrid(o.photos)}
+
+                        <button type="button" class="btn btn-primary" onclick="saveTechUpdate(${o.id})">💾 Update Status & Bill</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loginOwner() {
+            const pin = (document.getElementById('ownerPin')?.value || '').trim();
+            if (pin !== OWNER_PIN) {
+                alert('Galat Owner PIN!');
+                return;
+            }
+            document.getElementById('ownerLoginBox').style.display = 'none';
+            document.getElementById('ownerDashboard').style.display = 'block';
+            renderOwnerOrders();
+        }
+
+        function renderOwnerOrders() {
+            const statsBox = document.getElementById('ownerStats');
+            const techReportBox = document.getElementById('ownerTechReportBox');
+            const listBox = document.getElementById('ownerOrdersList');
+            if (!listBox) return;
+
+            const allOrders = getOrders();
+            const totalRev = allOrders.reduce((sum, o) => sum + (Number(o.billAmount) || 0), 0);
+            const activeCount = allOrders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled').length;
+
+            if (statsBox) {
+                statsBox.innerHTML = `
+                    <div class="stat-box"><strong>${allOrders.length}</strong><span>Total Orders</span></div>
+                    <div class="stat-box"><strong>${activeCount}</strong><span>Active Jobs</span></div>
+                    <div class="stat-box"><strong>₹${totalRev}</strong><span>Total Billed</span></div>
+                `;
+            }
+
+            if (techReportBox) {
+                techReportBox.innerHTML = renderTechnicianWorkReportHtml(allOrders);
+            }
+
+            const q = (document.getElementById('ownerSearch')?.value || '').trim().toLowerCase();
+            const st = document.getElementById('ownerFilter')?.value || 'ALL';
+
+            const filtered = allOrders.filter(o => {
+                const matchStatus = st === 'ALL' || o.status === st;
+                const matchQuery = !q ||
+                    String(o.orderCode || '').toLowerCase().includes(q) ||
+                    String(o.name || '').toLowerCase().includes(q) ||
+                    String(o.phone || '').toLowerCase().includes(q) ||
+                    String(o.branch || '').toLowerCase().includes(q) ||
+                    String(o.assignedTechName || '').toLowerCase().includes(q);
+                return matchStatus && matchQuery;
+            });
+
+            if (!filtered.length) {
+                listBox.innerHTML = `<div class="box"><p style="font-size:12.5px; color:#64748b;">Koi order nahi mila.</p></div>`;
+                return;
+            }
+
+            listBox.innerHTML = filtered.map(o => `
+                <div class="order-card">
+                    <h4>${o.orderCode} — ${o.name} (${o.branch})</h4>
+                    <p><b>Phone:</b> <a href="tel:${o.phone}">${o.phone}</a> | <b>Service:</b> ${o.problem}</p>
+                    <p><b>Address:</b> ${o.address} ${o.liveLocLink ? `| <a href="${o.liveLocLink}" target="_blank">Customer Map</a>` : ''}</p>
+                    <span class="status-badge ${statusClass(o.status)}">${o.status}</span>
+                    <span class="status-badge ${o.paid ? 'paid-badge' : 'unpaid-badge'}">${o.paid ? 'Paid' : 'Unpaid'}</span>
+                    <span class="status-badge" style="background:#fef3c7; color:#92400e;">Bill: ₹${o.billAmount || 0}</span>
+                    ${renderTechTrackerInfo(o)}
+
+                    <div class="assign-box">
+                        <div style="font-size:12px; font-weight:700; color:#1e3a8a; margin-bottom:6px;">Confirm Order & Assign Technician</div>
+                        <div class="row-flex">
+                            <input type="text" id="techName_${o.id}" value="${(o.assignedTechName || '').replace(/"/g, '&quot;')}" placeholder="Technician ka naam" style="flex:1; padding:8px; font-size:12.5px;">
+                            <input type="tel" id="techPhone_${o.id}" value="${(o.assignedTechPhone || '').replace(/"/g, '&quot;')}" placeholder="Tech mobile" style="flex:1; padding:8px; font-size:12.5px;">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="confirmAndAssignTech(${o.id})">✅ Confirm & Assign</button>
+                        </div>
+                    </div>
+
+                    ${renderPhotosGrid(o.photos)}
+
+                    <div class="row-flex" style="margin-top:8px;">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteOrderByOwner(${o.id})">🗑️ Delete Order</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initial Boot
+        setupPosterImage();
+        setupCustomQrImage();
+        renderServicesCatalog();
+        updateBranchFeeUI();
+        applyCustomerSession();
+        initCloudSync();
+        renderPayments();
+        renderFeedbacks();
+    </script>
+</body>
+</html>
